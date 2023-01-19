@@ -8,5 +8,5 @@ echo yes | pip3 install -r requirements.txt
 echo yes | sudo docker container prune
 #echo yes | sudo docker image prune -a
 sudo dockerd
-sudo docker build . -t wzml
-sudo docker run -p 51:51 wzml
+sudo docker build . -t multifbot
+sudo docker run -p 62:62 multifbot
