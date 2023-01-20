@@ -31,7 +31,7 @@ linkvertise_list = [
 ]
 directdl_list = [
     "artstation.",
-    "mdisk.",
+    "mdisk.me",
     "wetransfer.",
     "we.tl",
     "gdbot.",
@@ -111,20 +111,30 @@ bypass_list = [
     "tnlink.",
     "xpshort.",
     "adrinolinks.",
+    "mdisk.pro",
+    "linkbnao.",
+    "vearnl.",
+    "urlearn.",
 ]
 scrape_list = [
+    "animeremux,",
     "atishmkv.",
+    "benzmovies.",
     "cinevez.",
     "cinevood.",
     "filecrypt.",
-    "htpmovies.",
     "igg-games.",
+    "moviesboss.",
     "moviesdrama.",
-    "privatemoviez.",
-    "sharespark.",
     "olamovies.",
     "psa.",
+    "taemovies.",
+    "tamiltvtoons.",
+    "teleguflix.",
     "toonworld4all.",
+    "sharespark.",
+    "moviesmod.",
+    "skymovieshd.",
 ]
 shst_list = [
     "shorte.st",
@@ -290,4 +300,20 @@ adfly_list = [
     "favoacew.com",
     "barsoocm.com",
     "chuxoast.com",
+]
+DB_SAVE_PREVENTION = [
+    "MDisk",
+    "WeTransfer",
+    "AnonFiles",
+    "Uptobox",
+    "Fichier",
+    "MegaUp",
+    "Bunkr.is",
+    "CyberDrop",
+    "Pixl.is",
+    "Sendcm Folder",
+    "Sendcm File",
+    "HTPMovies DL",
+    "PrivateMoviez DL",
+    "Script Generic",
 ]

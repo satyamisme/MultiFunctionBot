@@ -1,15 +1,14 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from bot.config import BOT_USERNAME, COMMAND_PREFIXES, OWNER_ID, SUDO_USERS
+from bot.config import BOT_USERNAME, DATABASE_URL, OWNER_ID, SUDO_USERS, prefixes
 from bot.helpers.database import DatabaseHelper
 from bot.helpers.decorators import sudo_commands
 
-prefixes = COMMAND_PREFIXES
-cmds_user = ["users", f"users@{BOT_USERNAME}"]
+cmds = ["users", f"users@{BOT_USERNAME}"]
 
 
-@Client.on_message(filters.command(cmds_user, **prefixes))
+@Client.on_message(filters.command(cmds, **prefixes))
 @sudo_commands
 async def all_users(_, message: Message):
     """
@@ -20,6 +19,7 @@ async def all_users(_, message: Message):
     msg += "\n"
     userb = "\n".join(f"<code>{user}</code>" for user in SUDO_USERS)
     msg += f"<b><u>Sudo Users:</u></b>\n{userb}"
-    total_users = await DatabaseHelper().total_users_count()
-    msg += f"\n<b><i>Total Bot Users: </i></b>{total_users}"
+    if DATABASE_URL is not None:
+        total_users = await DatabaseHelper().total_users_count()
+        msg += f"\n<b><i>Total Bot Users: </i></b>{total_users}"
     await message.reply_text(text=msg, disable_web_page_preview=True, quote=True)

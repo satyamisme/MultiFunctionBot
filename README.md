@@ -2,7 +2,7 @@
 
 > # Environment Variables
 
-- `CONFIG_ENV_URL` Put your Config File URL so that it works as Bot Config
+- `CONFIG_ENV_URL` Put your Config File URL (pasted in Github Gist) so that it works as Bot Config
 - `API_HASH` Your API Hash from [my.telegram.org](https://my.telegram.org)
 - `API_ID` Your API ID from [my.telegram.org](https://my.telegram.org)
 - `BOT_TOKEN` Your bot token from [@BotFather](https://telegram.dog/BotFather)
@@ -11,7 +11,7 @@
 - `SUDO_USERS` Sudo Users who can control the Bot. Separate User IDs by space
 - `BOT_USERNAME` Your BotuserName Without `@`. Example `MultiFunctionUse_Bot`
 - `BIFM_URL` Your [BIFM](https://git.gay/a/bifm) instance Url. Default to `https://bifm.tacohitbox.com/api/bypass?url`
-- `DATABASE_URL` Your Mongo Database URL (Connection string). Follow this [guide](https://github.com/missemily22/MultiFunctionBot/blob/main#generate-database) to generate database. 
+- `DATABASE_URL` Your Mongo Database URL (Connection string). Follow this [guide](https://github.com/missemily22/MultiFunctionBot/blob/main/README.md#generate-database) to generate database. 
 - `LOG_CHANNEL` Your Log Channel ID where the Bot which store Critical Information. Starts with "-"
 - `BOTOWNER_UNAME` Username Name of the Bot Owner (without `@`)
 - `FORCESUB_ENABLE` Set to True if you want to enable ForceSubscribe else set to False/None
@@ -30,9 +30,14 @@
 - `JIODRIVE_CRYPT` Put your JioDrive Crypt
 - `Sharerpw_XSRF` Put your Sharer XSRF Token
 - `Sharerpw_laravel` Put your Sharer Laravel Session
+- `SHAREDRIVE_PHPCKS ` Put your ShareDrive.pics PHP Packs Token
+- `TERABOX_COOKIES_URL` Put your TeraBox Cookies link pasted in Github Gist. Get Cookies in [terabox_cookies.txt](https://chrome.google.com/webstore/detail/get-cookiestxt/bgaddhkoddajcdgocldbbfleckgcbcid)
+- `DEFAULT_UPLOAD_HOST` Put the default host number for File Uploading. See the [table](/README.md#upload-hosts) for more Info
+- `UPLOAD_SIZE_LIMIT` Put the Max Size Limit (in GB) for File Upload Function
 - `UPTOBOX_TOKEN` Put your UptoBox Account Token (Free Account works too!)
-- `EMILY_API_URL` Your [Emily API](https://github.com/missemily2022/Emily-API) instance Urls. Separate API URLs by space
+- `EMILY_API_URL` Your [Emily API](https://github.com/missemily22/EmilyAPI) instance Urls. Separate API URLs by space
 - `UPSTREAM_REPO` Add the Upstream Repo of your Bot for automatic updation
+- `UPSTREAM_BRANCH` Select the Upstream Branch of your Bot for automatic updation
 ---
 
 <b>NOTE: Fill the above values in <code>config.env</code> or use them as Environment Variables. </b><br>
@@ -41,19 +46,28 @@
 ```
 start - Bot Start Message
 help - Alias command for start
-image2pdf - Convert Image to PDF
-rename - Rename a File in Telegram
-tgupload - Upload a File to Telegram
-takess - Take ScreenShot of a Webpage
+dalle - Generate images from a text prompt using DALLE-Mini
+upload - Upload a Telegram File to various Free File Hosting Servers
+mediainfo - (or use /m) Generate mediainfo from Telegram files or direct download links
+screenshot - (or use /ss) Generates video frame screenshot from Telegram files or direct download links
 bifm - Bypass Short Links using BIFM API
 direct - Get Direct Link for various Supported URLs
+bvip - Bypass Short Links using Bypass.vip API
 bypass - Bypass Various Supported Shortened URLs
 multi - Bypass Short Links using PyBypass Library
 shorten - Get AdFree Shortened URLs of your Link
 magnet - Extract Magnet from Torrent Websites
 index - Extract Direct Links from Bhadoo Index Folder URLs
 scrape - Extract Direct Links from Supported Sites
-gd - Get GDrive Links for various Drive File Sharer
+ytdl - (or /ytdlp) Extract DL Links using YT-DLP
+gd - (or use /clone) Get GDrive Links for various Drive File Sharer
+headfone - Scrape Headfone.co.in to get Direct Links of an Album
+hungama - Get Download link and Metadata of a Hungama Link
+image2pdf - Convert Image to PDF
+rename - Rename a File in Telegram
+tgupload - Upload a File to Telegram
+takess - Take ScreenShot of a Webpage
+wayback - Generate WayBack of a Webpage
 ```
 
 <details>
@@ -64,37 +78,50 @@ gd - Get GDrive Links for various Drive File Sharer
 	<i><b>Users Commands </b></i><br><br>
 	/start - To get the start message.<br>
 	/help - Alias command for start. <br>
-    /image2pdf - Convert Image to PDF <br>
-    /rename - Rename a File in Telegram <br>
-    /tgupload - Upload a File to Telegram <br>
-    /takess - Take ScreenShot of a Webpage <br>
-	/ping - Ping the telegram api server.<br>
+    /dalle - Generate images from a text prompt using DALLE-Mini <br>
+    /upload - Upload a Telegram File to various Free File Hosting Servers <br>
+    /mediainfo - (or use /m) Generate mediainfo from Telegram files or direct download links <br>
+    /screenshot - (or use /ss) Generates video frame screenshot from Telegram files or direct download links <br>
     /bifm - Bypass Short Links using BIFM API <br>
     /direct - Get Direct Link for various Supported URLs <br>
+    /bvip - Bypass Short Links using Bypass.vip API <br>
     /bypass - Bypass Various Supported Shortened URLs <br>
     /multi - Bypass Short Links using PyBypass Library <br>
     /shorten - Get AdFree Shortened URLs of your Link <br>
     /magnet - Extract Magnet from Torrent Websites <br>
     /index - Extract Direct Links from Bhadoo Index Folder URLs <br>
     /scrape - Extract Direct Links from Supported Sites <br>
-    /gd - Get GDrive Links for various Drive File Sharer <br>
+    /ytdl - (or /ytdlp) Extract DL Links using YT-DLP <br>
+    /gd - (or use /clone) Get GDrive Links for various Drive File Sharer <br>
+    /headfone - Scrape Headfone.co.in to get Direct Links of an Album <br>
+    /hungama - Get Download link and Metadata of a Hungama Link <br>
+    /image2pdf - Convert Image to PDF <br>
+    /rename - Rename a File in Telegram <br>
+    /tgupload - Upload a File to Telegram <br>
+    /takess - Take ScreenShot of a Webpage <br>
+    /wayback - Generate WayBack of a Webpage <br>
+    /paste - Paste the text/document to KatBin <br>
+	/ping - Ping the telegram api server <br>
 	</li>
 <br>
     <li>
     <i><b>Sudo User Commands </b></i><br><br>
+    /db: Get information about Bot DataBase <br>
     /speedtest: Check the internet speed of bot server.<br>
     /serverstats: Get the stats of server.<br>
     /stats: Alias command for serverstats.<br>
     /users - Get details about the Bot Users <br>
+    /inspect - Inspect the message and give reply in json format <br>
     </li>
 <br>
     <li>
     <i><b>Developer Commands </b></i><br><br> 
 	/addsudo - Add a user to the Bot sudo users list <br>
     /removesudo - Remove a user to the Bot sudo users list <br>
+    /broadcast - Broadcast a message to all the Bot Users <br>
     /shell: To run the terminal commands via bot.<br>
-    /exec: To run the python commands via bot. <br>
-    /update: To update the bot to latest commit from UpStream Repositorys. <br> 
+    /exec: (or use /py) To run the python commands via bot. <br>
+    /update: To update the bot to latest commit from UpStream Repository. <br> 
     /restart: Restart the bot. <br>
     /log: To get the log file of bot. <br>
 </ul>
@@ -114,8 +141,31 @@ gd - Get GDrive Links for various Drive File Sharer
 
 ------
 
+## Upload Hosts
+
+| #  |     Host    |  Limit |
+|----|-------------|--------|
+| 1  | anonfiles   | 20 GB  |
+| 2  | Catbox      | 200 MB |
+| 3  | file.io     | 2 GB   |
+| 4  | Filemail    | 5 GB   |
+| 5  | Gofile      | unlim  |
+| 6  | KrakenFiles | 1 GB   |
+| 7  | LetsUpload  | 10 GB  |
+| 8  | MegaUp      | 5 GB   |
+| 9  | MixDrop     | unlim  |
+| 10 | pixeldrain  | 10 GB  |
+| 11 | Racaty      | 10 GB  |
+| 12 | transfer.sh | unlim  |
+| 13 | Uguu        | 128 MB |
+| 14 | WeTransfer  | 2 GB   |
+| 15 | workupload  | 2 GB   |
+| 16 | zippyshare  | 500 MB |
+
+
 # Contributions - 
-- Thanks to [Sanjit Sinha](https://github.com/sanjit-sinha) for [Telegram-Bot-Boilerplate](https://github.com/sanjit-sinha/Telegram-Bot-Boilerplate) Template
+- Thanks to [Sanjit Sinha](https://github.com/sanjit-sinha) for [Telegram-Bot-Boilerplate](https://github.com/sanjit-sinha/Telegram-Bot-Boilerplate) Template and [Tg-MediaInfoBot](https://github.com/sanjit-sinha/Tg-MediaInfoBot)
+- Thanks to [Altryne](https://github.com/altryne) for [ChatGPT-Telegram-Bot](https://github.com/altryne/chatGPT-telegram-bot)
 - Thanks to [Yukki Senpai](https://github.com/xcscxr) for Bypassers as well as GDrive Sharer Directs
 - Thanks to [Jack](https://github.com/JohnWickKeanue) for Site Scraping Scripts
 - Thanks to [Miss Emily](https://github.com/missemily22) for maintaining the Repo as well as the API
@@ -129,6 +179,19 @@ gd - Get GDrive Links for various Drive File Sharer
 - Click on the Button below to deploy this Bot to Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/missemily22/MultiFunctionBot)
+
+
+<a name="deploy-to-koyeb"></a>
+
+<h2> <b><img src="https://user-images.githubusercontent.com/87380104/205833766-633843a2-d802-4c72-8732-70d826d5c144.png" height="20" width="20">  Deploy on Koyeb</b> </h2>
+
+<b>Run program totally for free on Koyeb with single click deployment button!</b>
+#### **1. Click the following one-click deployment button:**
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/apps/deploy?type=docker&image=ghcr.io/missemily22/multifunctionbot:lite&name=mfbot&ports=8080;http;/&env[CONFIG_ENV_URL]=Put-your-Config-File-URL-so-that-it-works-as-Bot-Config)
+#### **2. Fill the Config File variable with a direct link to your config and click `Deploy`.**
+#### **3. While deployment, you can choose `Micro` instance type since it requires 512 RAM.**
+![image](https://user-images.githubusercontent.com/87380104/205841570-6a43c020-eecf-4574-8c53-41f9454b5d79.png)
+#### **⛔NOTE: This method uses ready-to-use Docker Image made specially for Koyeb, hence any change requires building of new image with `Flask` to listen on port `8080`.**
 
 
 <!---Docker--->

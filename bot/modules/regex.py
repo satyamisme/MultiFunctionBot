@@ -8,7 +8,7 @@ URL_REGEX = r"(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+"
 
 def is_a_url(url: str):
     url = re.match(
-        r"((http|https)\:\/\/)?[a-zA-Z0-9\.\/\?\:@\-_=#]+\.([a-zA-Z]){2,6}([a-zA-Z0-9\.\&\/\?\:@\-_=#])*",
+        r"(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])",
         url,
     )
     return bool(url)
@@ -17,7 +17,7 @@ def is_a_url(url: str):
 def is_bhadoo_index(url: str):
     client = requests.Session()
     url = url + "/" if url[-1] != "/" else url
-    res = client.get(url, allow_redirects=False)
+    res = client.get(url, allow_redirects=True)
     soup = BeautifulSoup(res.content, "html.parser")
     x = soup.select('link[href^="https://cdn.jsdelivr.net/npm/@googledrive/index"]')
     if x:
@@ -45,6 +45,11 @@ def is_udrive_link(url: str):
     return bool(url)
 
 
+def is_sharedrive_link(url: str):
+    url = re.match(r"https?://(sharedrive)\.pics/\S+", url)
+    return bool(url)
+
+
 def is_sharer_link(url: str):
     url = re.match(r"https?://(sharer)\.pw/\S+", url)
     return bool(url)
@@ -64,6 +69,11 @@ def is_fichier_link(url: str):
         r"https?://(pjointe|dl4free|tenvoi|piecejointe|mesfichiers|desfichiers|megadl|dfichiers|alterupload|cjoint|1fichier|\.com/\?)\S+",
         url,
     )
+    return bool(url)
+
+
+def is_filepress_link(url: str):
+    url = re.match(r"https?://(filepress|filebee)\.\S+", url)
     return bool(url)
 
 

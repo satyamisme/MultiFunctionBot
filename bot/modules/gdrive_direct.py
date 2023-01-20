@@ -2,10 +2,12 @@ import base64
 import os
 import re
 from time import sleep
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import urlparse
 
 import chromedriver_autoinstaller
+import cloudscraper
 from lxml import etree
+from playwright.sync_api import Playwright, expect, sync_playwright
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -22,17 +24,12 @@ async def gdtot(url: str) -> str:
     client = requests.Session()
     match = re.findall(r"https?://(.+)\.gdtot\.(.+)\/\S+\/\S+", url)[0]
     client.cookies.update({"crypt": crypt})
-    res = client.get(url)
     res = client.get(f"https://{match[0]}.gdtot.{match[1]}/dld?id={url.split('/')[-1]}")
-    url = re.findall(r'URL=(.*?)"', res.text)[0]
-    params = parse_qs(urlparse(url).query)
-    if "gd" not in params or not params["gd"] or params["gd"][0] == "false":
+    params = re.findall("gd=(.*?)&", res.text)
+    try:
+        decoded_id = base64.b64decode(str(params[0])).decode("utf-8")
+    except BaseException:
         return "Something went wrong. Could not generate GDrive URL for your GDTot Link"
-    else:
-        try:
-            decoded_id = base64.b64decode(str(params["gd"][0])).decode("utf-8")
-        except BaseException:
-            return "Something went wrong. Could not generate GDrive URL for your GDTot Link"
     drive_link = f"https://drive.google.com/open?id={decoded_id}"
     return drive_link
 
@@ -213,7 +210,7 @@ async def sharerpw(url: str, forced_login=False) -> str:
     if (Sharerpw_XSRF or Sharerpw_laravel) is None:
         return "Sharerpw Cookies not Found!"
     try:
-        scraper = requests.Session()
+        scraper = cloudscraper.create_scraper(delay=10, browser="chrome")
         scraper.cookies.update(
             {
                 "XSRF-TOKEN": Sharerpw_XSRF,
@@ -245,7 +242,7 @@ async def sharerpw(url: str, forced_login=False) -> str:
             info_parsed["error"] = False
             info_parsed["gdrive_link"] = res["url"]
         if len(ddl_btn) and not forced_login and "url" not in info_parsed:
-            return sharerpw(url, forced_login=True)
+            return await sharerpw(url, forced_login=True)
         return info_parsed["gdrive_link"]
     except Exception as err:
         return f"Encountered Error while parsing Link : {err}"
@@ -270,6 +267,77 @@ async def drivehubs(url: str) -> str:
         return flink
     else:
         return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
+
+
+def filep_prun(playwright: Playwright, url: str) -> str:
+    browser = playwright.chromium.launch()
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto(url)
+    firstbtn = page.locator("xpath=//div[text()='Direct Download']/parent::button")
+    expect(firstbtn).to_be_visible()
+    firstbtn.click()
+    sleep(10)
+    secondBtn = page.get_by_role("button", name="Download Now")
+    expect(secondBtn).to_be_visible()
+    with page.expect_navigation():
+        secondBtn.click()
+    flink = page.url
+    context.close()
+    browser.close()
+    if "drive.google.com" in flink:
+        return flink
+    else:
+        return f"ERROR! Maybe Direct Download is not working for this file !\n Retrived URL : {flink}"
+
+
+def filepress(url: str) -> str:
+    with sync_playwright() as playwright:
+        flink = filep_prun(playwright, url)
+        return flink
+
+
+async def shareDrive(url, directLogin=True):
+    if SHAREDRIVE_PHPCKS is None:
+        return "ShareDrive Cookie not Found!"
+    try:
+        successMsgs = ["success", "Success", "SUCCESS"]
+        scrapper = requests.Session()
+        cook = scrapper.get(url)
+        cookies = cook.cookies.get_dict()
+        PHPSESSID = cookies["PHPSESSID"]
+        headers = {
+            "authority": urlparse(url).netloc,
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "Origin": f"https://{urlparse(url).netloc}/",
+            "referer": url,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.35",
+            "X-Requested-With": "XMLHttpRequest",
+        }
+        if directLogin:
+            cookies = {"PHPSESSID": PHPSESSID}
+            data = {"id": url.rsplit("/", 1)[1], "key": "direct"}
+        else:
+            cookies = {"PHPSESSID": PHPSESSID, "PHPCKS": SHAREDRIVE_PHPCKS}
+            data = {"id": url.rsplit("/", 1)[1], "key": "original"}
+        resp = scrapper.post(
+            f"https://{urlparse(url).netloc}/post",
+            headers=headers,
+            data=data,
+            cookies=cookies,
+        )
+        toJson = resp.json()
+        if directLogin:
+            if toJson["message"] in successMsgs:
+                driveUrl = toJson["redirect"]
+                return driveUrl
+            else:
+                await shareDrive(url, directLogin=False)
+        else:
+            driveUrl = toJson["redirect"]
+            return driveUrl
+    except Exception as err:
+        return f"Encountered Error while parsing Link : {err}"
 
 
 async def pahe(url: str) -> str:
@@ -319,5 +387,5 @@ async def pahe(url: str) -> str:
     wd.execute_script("arguments[0].click();", last)
     flink = wd.current_url
     wd.close()
-    gd_url = gdtot(flink)
+    gd_url = await gdtot(flink)
     return gd_url

@@ -41,12 +41,12 @@ if len(BOT_USERNAME) == 0:
 if "@" in BOT_USERNAME:
     BOT_USERNAME = BOT_USERNAME.replace("@", "")
 
-list = []
+cmd_list = []
 cmd_prfx = environ.get("COMMAND_PREFIXES", "! / .")
 if len(cmd_prfx) != 0:
     for cmds in cmd_prfx.split():
-        list.append(cmds.strip())
-    COMMAND_PREFIXES = dict(prefixes=list)
+        cmd_list.append(cmds.strip())
+    COMMAND_PREFIXES = prefixes = dict(prefixes=cmd_list)
 else:
     COMMAND_PREFIXES = set()
 
@@ -78,14 +78,14 @@ else:
     LOG_CHANNEL = int(LOG_CHANNEL)
 
 FORCESUB_ENABLE = environ.get("FORCESUB_ENABLE")
-if FORCESUB_ENABLE is (False or None):
+if FORCESUB_ENABLE is (False or None or ""):
     FORCESUB_ENABLE = False
     LOGGER(__name__).warning("ForceSub is Disabled!")
 
 FORCESUB_CHANNEL = environ.get("FORCESUB_CHANNEL", "")
 if len(FORCESUB_CHANNEL) == 0:
     LOGGER(__name__).warning("FORCESUB_CHANNEL not provided!")
-    FORCESUB_CHANNEL = "-100"
+    FORCESUB_CHANNEL = None
 elif not FORCESUB_CHANNEL.startswith("-"):
     FORCESUB_CHANNEL = int(f"-{FORCESUB_CHANNEL}")
 else:
@@ -118,7 +118,7 @@ if len(BIFM_URL) == 0:
 EMILY_API_URL = environ.get("EMILY_API_URL", "")
 if len(EMILY_API_URL) == 0:
     LOGGER(__name__).warning("EMILY_API_URL not provided! (Using Default)")
-    EMILY_API_URL = "https://api.emilyx.in/api https://emilyapi.fly.dev/api https://emily-api.fly.dev/api"
+    EMILY_API_URL = "https://api.emilyx.in/api https://emilyapi.fly.dev/api"
 
 GDTOT_CRYPT = environ.get("GDTOT_CRYPT", "")
 if len(GDTOT_CRYPT) == 0:
@@ -165,6 +165,11 @@ if len(JIODRIVE_CRYPT) == 0:
     LOGGER(__name__).warning("JIODRIVE_CRYPT not provided!")
     JIODRIVE_CRYPT = ""
 
+SHAREDRIVE_PHPCKS = environ.get("SHAREDRIVE_PHPCKS", "")
+if len(SHAREDRIVE_PHPCKS) == 0:
+    LOGGER(__name__).warning("SHAREDRIVE_PHPCKS not provided!")
+    SHAREDRIVE_PHPCKS = ""
+
 Sharerpw_XSRF = environ.get("Sharerpw_XSRF", "")
 Sharerpw_laravel = environ.get("Sharerpw_laravel", "")
 if len(Sharerpw_XSRF) == 0 or len(Sharerpw_laravel) == 0:
@@ -179,7 +184,37 @@ if len(UNIFIED_EMAIL) == 0 or len(UNIFIED_PASS) == 0:
     UNIFIED_EMAIL = ""
     UNIFIED_PASS = ""
 
+TERABOX_COOKIES_URL = environ.get("TERABOX_COOKIES_URL", "")
+if len(TERABOX_COOKIES_URL) != 0:
+    try:
+        res = requests.get(TERABOX_COOKIES_URL)
+        if res.status_code == 200:
+            with open("terabox_cookies.txt", "wb+") as f:
+                f.write(res.content)
+        else:
+            LOGGER(__name__).error(
+                f"Failed to load the terabox_cookies.txt file [{res.status_code}]"
+            )
+    except Exception as err:
+        LOGGER(__name__).error(f"TeraBox Cookies URL: {err}")
+else:
+    LOGGER(__name__).warning("TeraBox Cookies URL Not Provided, Proceeding without it!")
+
+DEFAULT_UPLOAD_HOST = int(environ.get("DEFAULT_UPLOAD_HOST", 1))
+if DEFAULT_UPLOAD_HOST is None:
+    LOGGER(__name__).warning(
+        "Default Upload Host is missing, so it has been set to Anonfiles!"
+    )
+
+UPLOAD_SIZE_LIMIT = float(environ.get("UPLOAD_SIZE_LIMIT", 2.5))
+if UPLOAD_SIZE_LIMIT is None:
+    LOGGER(__name__).warning("UPLOAD_SIZE_LIMIT not provided! Set it to default 2.5GB!")
+
 UPSTREAM_REPO = environ.get("UPSTREAM_REPO", "")
 if len(UPSTREAM_REPO) == 0:
     LOGGER(__name__).warning("UPSTREAM_REPO not provided!")
     UPSTREAM_REPO = ""
+
+UPSTREAM_BRANCH = environ.get("UPSTREAM_BRANCH", "")
+if len(UPSTREAM_BRANCH) == 0:
+    UPSTREAM_BRANCH = "main"

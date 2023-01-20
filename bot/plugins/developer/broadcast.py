@@ -1,95 +1,59 @@
 import asyncio
-import datetime
-import io
-import time
-import traceback
 
-from pyrogram.errors import (
-    FloodWait,
-    InputUserDeactivated,
-    PeerIdInvalid,
-    UserIsBlocked,
-)
+from pyrogram import Client, filters
 
-from bot.config import LOG_CHANNEL
+from bot.config import BOT_USERNAME, prefixes
 from bot.helpers.database import DatabaseHelper
+from bot.helpers.decorators import dev_commands
 from bot.logging import LOGGER
 
+Broadcast_IDs = {}
 
-class Broadcast:
-    def __init__(self, client, broadcast_message):
-        self.client = client
-        self.broadcast_message = broadcast_message
+commands = ["broadcast", f"broadcast@{BOT_USERNAME}"]
 
-        self.cancelled = False
-        self.progress = dict(total=0, current=0, failed=0, success=0)
 
-    def get_progress(self):
-        return self.progress
+@Client.on_message(filters.command(commands, **prefixes))
+@dev_commands
+async def broadcast(c, m):
+    """
+    Broadcast the message via bot to bot users
+    """
 
-    def cancel(self):
-        self.cancelled = True
+    if not (broadcast_msg := m.reply_to_m):
+        broadcast_usage = f"Reply with command /broadcast to the message you want to broadcast.\n\n/broadcast loud - To Enable Notificatons"
+        return await m.reply_text(broadcast_usage, quote=True)
 
-    async def _send_msg(self, user_id):
+    proses_msg = await m.reply_text(
+        "**Broadcasting started. Please wait for few minutes for it to get completed.**",
+        quote=True,
+    )
+
+    disable_notification = True
+    commands = m.command
+
+    if len(commands) > 3:
+        return await proses_msg.edit("Invalid Command")
+
+    for command in m.command:
+        if command.lower() == "loud":
+            disable_notification = False
+
+    total_list = await DatabaseHelper().get_all_users()
+
+    failed = 0
+    success = 0
+
+    for __id in total_list:
         try:
-            await self.broadcast_message.copy(chat_id=user_id)
-            return 200, None
-        except FloodWait as e:
-            await asyncio.sleep(e.x + 1)
-            return self._send_msg(user_id)
-        except InputUserDeactivated as e:
-            LOGGER(__name__).error(e)
-            return 400, f"{user_id} : deactivated\n"
-        except UserIsBlocked as e:
-            LOGGER(__name__).error(e)
-            return 400, f"{user_id} : blocked the bot\n"
-        except PeerIdInvalid as e:
-            LOGGER(__name__).error(e)
-            return 400, f"{user_id} : user id invalid\n"
-        except Exception as e:
-            LOGGER(__name__).error(e, exc_info=True)
-            return 500, f"{user_id} : {traceback.format_exc()}\n"
+            await broadcast_msg.copy(
+                __id, broadcast_msg.caption, disable_notification=disable_notification
+            )
+            success += 1
+            await asyncio.sleep(0.3)
+        except Exception as error:
+            LOGGER(__name__).error(str(error))
+            failed += 1
 
-    async def start(self):
-        all_users = await DatabaseHelper().get_all_users()
-        start_time = time.time()
-        total_users = await DatabaseHelper().total_users_count()
-        done = 0
-        failed = 0
-        success = 0
-        log_file = io.BytesIO()
-        log_file.name = f"{datetime.datetime.utcnow()}_broadcast.txt"
-        broadcast_log = ""
-        async for user in all_users:
-            await asyncio.sleep(0.5)
-            sts, msg = await self._send_msg(user_id=int(user["id"]))
-            if msg is not None:
-                broadcast_log += msg
-            if sts == 200:
-                success += 1
-            else:
-                failed += 1
-            if sts == 400:
-                await DatabaseHelper().delete_user(user["id"])
-            done += 1
-            self.progress.update(dict(current=done, failed=failed, success=success))
-            if self.cancelled:
-                break
-        log_file.write(broadcast_log.encode())
-        completed_in = datetime.timedelta(seconds=int(time.time() - start_time))
-        await asyncio.sleep(3)
-        if not self.cancelled:
-            update_text = f"#Broadcast completed in `{completed_in}`\n\nTotal users {total_users}.\nTotal done {done}, {success} success and {failed} failed.\nStatus: Completed"
-        else:
-            update_text = f"#Broadcast completed in `{completed_in}`\n\nTotal users {total_users}.\nTotal done {done}, {success} success and {failed} failed.\nStatus: Cancelled"
-        if failed == 0:
-            await self.client.send_message(
-                chat_id=LOG_CHANNEL,
-                text=update_text,
-            )
-        else:
-            await self.client.send_document(
-                chat_id=LOG_CHANNEL,
-                document=log_file,
-                caption=update_text,
-            )
+    return await proses_msg.edit(
+        f"**The message has been successfully broadcasted.**\n\nTotal success = {success}\nTotal Failure = {failed}"
+    )
